@@ -21,39 +21,47 @@ def quantizetopalette(silf, palette, dither=False):
     return silf._makeself(im)
 
 
-for root, dirs, files in os.walk('bmps_out'):
+for root, dirs, files in os.walk('bmps_out/wall'):
     for name in dirs:
-        dirname = str('x30_out/')+os.path.join(root[8:],name)
-        dirname2 = str('x15_out/')+os.path.join(root[8:],name)
+        dirname = str('x30_out/')+os.path.join(root[9:],name)
+        dirname2 = str('x15_out/')+os.path.join(root[9:],name)
         if not os.path.isdir(dirname):
             os.mkdir(dirname)
         if not os.path.isdir(dirname2):
             os.mkdir(dirname2)
     for name in files:
         if name[-3:].upper()=='BMP':
-            print (str("applying alpha: ")+os.path.join(root[8:],name[:-4]))
-            dstname = str('x30_out/')+os.path.join(root[8:],name)
-            dstname2 = str('x15_out/')+os.path.join(root[8:],name)
-            brdname = str('border_out/')+os.path.join(root[8:],name)
-            origname = str('bmps_in/')+os.path.join(root[8:],name)
+            print (str("applying alpha: ")+os.path.join(root[9:],name[:-4]))
+            dstname = str('x30_out/')+os.path.join(root[9:],name)
+            dstname2 = str('x15_out/')+os.path.join(root[9:],name)
+            brdname = str('border_out/')+os.path.join(root[9:],name)
+            origname = str('bmps_in/')+os.path.join(root[9:],name)
             srcname = os.path.join(root,name)
             #subprocess.call(["ArtConverter.exe",srcname,dstname])
             img = Image.open(srcname)
-            smallsize = ((img.size[0]+1)//2, (img.size[1]+1)//2)
+            if img.size[0]<=3 or img.size[1]<=3:
+                continue
+            smallsize = ((img.size[0])//2, (img.size[1])//2)
             img2 = img.resize(smallsize, Image.ANTIALIAS)
             orig = Image.open(origname)
             palette = orig.getpalette()
             if palette!=None:
+                img.save(dstname)
+                img2.save(dstname2)
+                
+                subprocess.call(["Quantizer.exe",origname,dstname])
+                subprocess.call(["Quantizer.exe",origname,dstname2])
+                
                 alpha  = palette[0:3]
                 border = Image.open(brdname)
-                img = quantizetopalette(img, orig, dither=False)
+                img = Image.open(dstname)
                 pix = np.array(img,dtype='uint8')
                 apix = np.array(border,dtype='uint8')
                 pix.flags.writeable=True
                 pix[apix==0]=0
                 img = Image.fromarray( np.asarray( np.clip(pix,0,255), dtype="uint8"), "P" )
                 
-                img2 = quantizetopalette(img2, orig, dither=False)
+                img2 = Image.open(dstname2)
                 pix = np.array(img2,dtype='uint8')
                 border = border.resize(smallsize, Image.NEAREST)
                 apix = np.array(border,dtype='uint8')
