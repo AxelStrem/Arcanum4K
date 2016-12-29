@@ -2,7 +2,7 @@ import os
 import subprocess
 from shutil import copyfile
 
-for root, dirs, files in os.walk('bmps_in/wall'):
+for root, dirs, files in os.walk('bmps_in'):
     for name in dirs:
         dirname = str('x15_art')+os.path.join(root[7:],name)
         if not os.path.isdir(dirname):
