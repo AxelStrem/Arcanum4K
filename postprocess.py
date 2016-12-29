@@ -21,7 +21,7 @@ def quantizetopalette(silf, palette, dither=False):
     return silf._makeself(im)
 
 
-for root, dirs, files in os.walk('bmps_out/wall'):
+for root, dirs, files in os.walk('bmps_out'):
     for name in dirs:
         dirname = str('x30_out/')+os.path.join(root[9:],name)
         dirname2 = str('x15_out/')+os.path.join(root[9:],name)
