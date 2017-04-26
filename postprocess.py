@@ -41,7 +41,7 @@ for root, dirs, files in os.walk('bmps_out'):
             img = Image.open(srcname)
             if img.size[0]<=3 or img.size[1]<=3:
                 continue
-            smallsize = ((img.size[0])//2, (img.size[1])//2)
+            smallsize = ((img.size[0] + 1)//2, (img.size[1] + 1)//2)
             img2 = img.resize(smallsize, Image.ANTIALIAS)
             orig = Image.open(origname)
             palette = orig.getpalette()
